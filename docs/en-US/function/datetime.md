@@ -6,7 +6,7 @@ Parameter **<date_or_datetime_string>**: date type or datetime string. Required 
 NLC snippet: datetime("2026-04-01 08:30:50") // result is datetime 2026-04-01 08:30:50
 Parameter **<time>**: time type, used to compose datetime. Non-required parameter; type is time; parameter name omitted.
 > Example: Generate datetime from date 2026-04-01 and time 08:30:50.
-NLC snippet: datetime(date("2026-04-01"),time("08:30:50")) // result is datetime 2026-04-01 08:30:50
+NLC snippet: datetime(date("2026-04-01"),time(" 08:30:50")) // result is datetime 2026-04-01 08:30:50
 Parameter **[format <format_pattern>]**: When <date_or_datetime_string> is a datetime string, parse it using this pattern. Non-required parameter; type is string; parameter name cannot be omitted.
 > Example: Parse "12/28/1972 10:23:43" using pattern "MM/dd/yyyy HH:mm:ss".
 NLC snippet: datetime("12/28/1972 10:23:43"; format "MM/dd/yyyy HH:mm:ss") // result is datetime 1972-12-28 10:23:43

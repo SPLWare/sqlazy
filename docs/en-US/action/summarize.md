@@ -1,8 +1,8 @@
 ﻿### Action: summarize
 #### Mode Determination (Highest Priority, Must Execute First)
 Summarize has two mutually exclusive aggregation modes: 1. single aggregation 2. double aggregation
-Single aggregation means: a summary column (a set of summary parameters) executes only one value aggregation algorithm, i.e., an aggregation algorithm that reduces multiple records to a single value, specifically: first, last, sum, max, min, count, icount, avg, concat. Syntax: [summarize {[condition <filter_condition>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [as <new_column_name>]}] [group {[<group_expression>] [as <new_column_name>]}]
-Double aggregation means: a summary column (a set of summary parameters) needs to perform two aggregations. The first is a record aggregation algorithm, which reduces multiple records to one record or multiple records with the same value, specifically: argmax, argmin. For example, the record with the maximum order amount; when the maximum value is not repeated, the result is one record; when the maximum value is repeated, the result is multiple records. After the first aggregation algorithm, the second value aggregation algorithm (the aggregation algorithm that reduces multiple records to a single value) must be immediately executed to get the final result. For instance, the first aggregation finds multiple records with the maximum order amount, and the second aggregation calculates the sum of amounts from these records; the complete algorithm is to find the sum of amounts of the records with the maximum order amount. NLC's double aggregation is similar to SQL's KEEP function. Syntax: [summarize {[condition <filter_condition>] [record_aggregation_algorithm] [<aggregated_expression>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [as <new_column_name>]}] [group {[<group_expression>] [as <new_column_name>]}]
+Single aggregation means: a summary column (a set of summary parameters) executes only one value aggregation algorithm, i.e., an aggregation algorithm that reduces multiple records to a single value, specifically: first, last, sum, max, min, count, icount, avg, concat. Syntax: [summarize {[value_aggregation_algorithm] [<aggregated_expression>] [with] [condition <filter_condition>] [as <new_column_name>]}] [group {[<group_expression>] [as <new_column_name>]}]
+Double aggregation means: a summary column (a set of summary parameters) needs to perform two aggregations. The first is a record aggregation algorithm, which reduces multiple records to one record or multiple records with the same value, specifically: argmax, argmin. For example, the record with the maximum order amount; when the maximum value is not repeated, the result is one record; when the maximum value is repeated, the result is multiple records. After the first aggregation algorithm, the second value aggregation algorithm (the aggregation algorithm that reduces multiple records to a single value) must be immediately executed to get the final result. For instance, the first aggregation finds multiple records with the maximum order amount, and the second aggregation calculates the sum of amounts from these records; the complete algorithm is to find the sum of amounts of the records with the maximum order amount. NLC's double aggregation is similar to SQL's KEEP function. Syntax: [summarize {[record_aggregation_algorithm] [<aggregated_expression>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [condition <filter_condition>] [as <new_column_name>]}] [group {[<group_expression>] [as <new_column_name>]}]
 Determination Rules (Must Execute Strictly):
 If the aggregation calculation expressed by the natural language includes: argmax, argmin
 �� must use double aggregation.
@@ -14,7 +14,7 @@ If argmax or argmin is not explicitly expressed:
 �� default to single aggregation.
 #### Parameter Structure Description
 > Structural note: Summary/group both correspond to table-type parameters; when field names are omitted, field order follows the same rule as parameter order, matching by type and agreed order (corresponding to spec L96 new sentence); [aggr] before [item].
-The parameters of this action are composed of two parts: summary and group. The summary part's parameter name is "summary", must be omitted. It consists of one or more sets of identically structured parameters, each set representing a summary column. For single aggregation, one set of parameters is composed of 5 parameters: [condition <filter_condition>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [as <new_column_name>]; for double aggregation, one set of parameters is composed of 7 parameters: [condition <filter_condition>] [record_aggregation_algorithm] [<aggregated_expression>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [as <new_column_name>]. The group part's parameter name is "group", cannot be omitted, and also consists of one or more sets of identically structured parameters, each set representing a group column, composed of 2 parameters: [<group_expression>] [as <new_column_name>]. First, explain the summary part parameters.
+The parameters of this action are composed of two parts: summary and group. The summary part's parameter name is "summary", must be omitted. It consists of one or more sets of identically structured parameters, each set representing a summary column. For single aggregation, one set of parameters is composed of 5 parameters: [value_aggregation_algorithm] [<aggregated_expression>] [with] [condition <filter_condition>] [as <new_column_name>]; for double aggregation, one set of parameters is composed of 7 parameters: [record_aggregation_algorithm] [<aggregated_expression>] [value_aggregation_algorithm] [<aggregated_expression>] [with] [condition <filter_condition>] [as <new_column_name>]. The group part's parameter name is "group", cannot be omitted, and also consists of one or more sets of identically structured parameters, each set representing a group column, composed of 2 parameters: [<group_expression>] [as <new_column_name>]. First, explain the summary part parameters.
 #### Parameter Descriptions
 Parameter: **aggregated_expression**
 The expression targeted when performing aggregation calculation on data within a group, usually an expression related to the original column, including a single column (a type of expression). For example: UnitPrice*Quantity, an expression containing multiple columns; Amount, a single column. Required parameter; type is expression; parameter name must be omitted, parameter value cannot be omitted. Note, this parameter must be used together with the **value_aggregation_algorithm** or **record_aggregation_algorithm**. A certain summary column has only one **aggregated_expression** parameter for single aggregation, and definitely two **aggregated_expression** parameters for double aggregation. Note, this parameter does not support cross-row calculation and aggregation calculation, i.e., the expression cannot contain relative position calculations like F[i], F[a:b], nor aggregate calculations like sum, average of a set.
@@ -44,6 +44,15 @@ SellerId	ClientList
 3	JFS,NR,KT,JFE,RA
 4	NR,EGH,WTC,RHD,ERN,GC
 5	WVF,WZ,XY,PAER,SPLI,YZ,ERN,CHO,QU
+Parameter: **condition <filter_condition>**
+Before aggregation, records within a group can be filtered first. Optional parameter; type is conditional expression; parameter name cannot be omitted.
+> Filter records that meet the conditional expression "OrderDate_year=2019 or OrderDate_year=2020", then find the maximum Amount.
+NLC: summarize condition (OrderDate_year=2019 or OrderDate_year=2020); max Amount
+Result:
+OrderID	ClientID	SellerId	maxAmount	OrderDate
+87	WF	15	19000	2019-03-04
+42	VET	12	19000	2020-04-08
+
 Parameter: **record_aggregation_algorithm**
 A fixed algorithm that aggregates data within a group to produce a single record or multiple records with the same value. Required parameter; enum type; parameter name must be omitted, parameter value can be omitted. This parameter is definitely for double aggregation, must be used together with the **aggregated_expression** parameter and the **value_aggregation_algorithm** parameter.
 The enum values are as follows:
@@ -54,15 +63,6 @@ Result:
 argmaxOrderDatemaxAmount	sumAmount
 20000	4500000
 Explanation: "argmaxOrderDatemaxAmount" and "sumAmount" are the column names of the summary result, automatically generated by the system. If you want to specify column names, use the **as <new_column_name>** parameter.
-
-Parameter: **condition <filter_condition>**
-Before aggregation, records within a group can be filtered first. Optional parameter; type is conditional expression; parameter name cannot be omitted.
-> Filter records that meet the conditional expression "OrderDate_year=2019 or OrderDate_year=2020", then find the maximum Amount.
-NLC: summarize condition (OrderDate_year=2019 or OrderDate_year=2020); max Amount
-Result:
-OrderID	ClientID	SellerId	maxAmount	OrderDate
-87	WF	15	19000	2019-03-04
-42	VET	12	19000	2020-04-08
 
 Parameter: **group_expression**
 The expression used for grouping, can be a single field (a type of expression). For example, calculate the first 6 digits of the ID_card field as the grouping field "Region". When grouping by multiple columns, multiple sets of parameters are needed, each with one group column parameter. Required parameter (when the group part's parameters exist); type is expression; parameter name must be omitted. Note, this parameter does not support cross-row calculation and aggregation calculation, i.e., the expression cannot contain relative position calculations like F[i], F[a:b], nor aggregate calculations like sum, average of a set.

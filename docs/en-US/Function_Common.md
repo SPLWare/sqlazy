@@ -16,7 +16,7 @@ An expression may contain zero, one, or multiple potentially non-standard functi
 
 Note: This prompt only focuses on expressions and Functions. The definition of Actions is provided to help you distinguish between Actions and Functions. Do not confuse them.
 1. A Function is part of an expression, and an expression is part of an Action.
-2. Some enumerated values of enumerated parameters of Actions are similar or identical to Functions. For example, the compute, rank, and summarize actions have enumeration values of aggregation algorithms such as count, avg, max, first, etc., and some aggregate function names are the same as these enum parameter values (or the same after Chinese-to-English translation), such as count, avg, max, first, etc. Despite the same names, they are fundamentally different: an Action enum parameter value is itself a parameter value and cannot have its own parameters, while an aggregate function is a function and must **have parameters**. Note the example below:
+2. Some enumerated values of enumerated parameters of Actions are similar or identical to Functions. For example, the compute, rank, and summarize actions have enumeration values of aggregation algorithms such as count, avg, max, first, etc., and some aggregate function names are the same as these enum parameter values (or the same after Chinese-to-English translation), such as avg, max, first, etc. Despite the same names, they are fundamentally different: an Action enum parameter value is itself a parameter value and cannot have its own parameters, while an aggregate function is a function and must **have parameters**. Note the example below:
 
 > NLC: Action1 (max(Amount_quantity)+1) max
 In the above code, "Action1" is the action name (this action does not actually exist; it is just an example), and "max" is the enum parameter value of this action, not a function, because it is itself a parameter and has no parameters of its own; "(...)" parentheses indicate an expression, i.e., max(Amount1, Amount2)+1 is an expression; max(Amount1, Amount2) represents the aggregate function max and its parameters Amount1 and Amount2. Here, max is an aggregate function rather than an enum parameter value because it **has parameters** and parentheses outside the parameters. Note the key distinction method: whether there are parameters and parentheses outside the parameters; aggregate functions always take the form "function_name(parameters...)". You must distinguish correctly and not mistake enum parameter values for functions.
@@ -65,20 +65,14 @@ Depending on whether there is an object, it can be divided into several differen
 
 Function parameters can be expressions (including other functions, simple data types, set data types, field identifiers), forming nesting.
 
-#### Comparison Words (Comparison Operations, Conditional Operations, Boolean Operations)
-Placed between two expressions to compare their relationship, returning a boolean true/false. Each line below is a comparison word. A comparison word may have multiple spellings, e.g., "=" and "equal to" have the same meaning. Use common sense.
-= equal to // Note: boolean equality uses "=", not "=="
-<> not equal to
-< less than
-> greater than
-<= not greater than
->= not less than
-in
-not in
-before // For date/time
-after // For date/time
-not before // For date/time
-not after // For date/time
+#### Comparison Operators (Comparison Operations, Conditional Operations, Boolean Operations)
+Placed between two expressions to compare their relationship, returning a boolean true/false.
+= // Note: boolean equality uses "=", not "=="
+<>
+<
+>
+<=
+>=
 
 #### Connectives (Logical Operators)
 and, or, not ; and or not
@@ -87,11 +81,11 @@ and, or, not ; and or not
 + - * / =
 
 #### Ordered Set Operators, Table Field Operators
-X(i) The i-th member of ordered set X. For example: X=["apple","banana","grape"], then X[2] equals "banana"
-T.F The field F of the first row of table T. For example: Orders.Amount equals 440.0
-F When no other table exists besides the focus table, field names can be used alone. Compared to T.F, the difference is that T.F includes an explicit table name, while F does not. It is used in the presence of a focus table (default/current table). For example: Amount equals 440.0, where Amount is a field of the focus table.
-F@ When the focus table coexists with other tables, F@ must be used to indicate a field of the focus table to distinguish it from other tables (especially for duplicate field names). For example: salary@ >= 5000 and ["Sales Dept 1", "Sales Dept 2", "Product Dept"] contain department_name, where salary is a field of the focus table, and department_name is a field of another table. Note that when only the focus table exists, using F@ or F to express a field of the focus table is correct. For example, when only the focus table exists, both expressions are valid: Amount equals 440.0, Amount@ equals 440.0.
-#i # is a fixed symbol, i is the column number. #i indicates accessing a field by column number. For example: Orders.#4 equals Orders.Amount
+X(i) The i-th member of ordered set X. For example: X=["apple","banana","grape"], then X[2] = "banana"
+T.F The field F of the first row of table T. For example: Orders.Amount = 440.0
+F When no other table exists besides the focus table, field names can be used alone. Compared to T.F, the difference is that T.F includes an explicit table name, while F does not. It is used in the presence of a focus table (default/current table). For example: Amount = 440.0, where Amount is a field of the focus table.
+F@ When the focus table coexists with other tables, F@ must be used to indicate a field of the focus table to distinguish it from other tables (especially for duplicate field names). For example: salary@ >= 5000 and ["Sales Dept 1", "Sales Dept 2", "Product Dept"] contain department_name, where salary is a field of the focus table, and department_name is a field of another table. Note that when only the focus table exists, using F@ or F to express a field of the focus table is correct. For example, when only the focus table exists, both expressions are valid: Amount = 440.0, Amount@ = 440.0.
+#i # is a fixed symbol, i is the column number. #i indicates accessing a field by column number. For example: Orders.#4 = Orders.Amount
 # Record row number, equivalent to a special built-in column of the table.
 F[i] F is a field name, i is the adjacent/relative/cross-row position, i.e., the i-th row relative to the current row. Positive numbers indicate forward, negative numbers indicate backward, out-of-bound returns null. F[i] represents the value of field F in the current table at the row i steps away from the current row. The current field F is an abbreviation for F[0]. For example: Assign the Amount of the Orders table to the Amount of the next record, effectively shifting one row upward. NLC:
 compute column Amount[1]

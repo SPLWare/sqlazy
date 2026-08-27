@@ -6,7 +6,7 @@ Please follow the subsequent knowledge base and strictly process according to th
 If the user instruction lacks the necessary parameters for this action, indicating an abnormal flow, output: 0; error, action <action_name> missing required parameter <specific_parameter_name>. Note that you must replace the variable <action_name> with the actual action name and <specific_parameter_name> with the actual parameter name.
 Otherwise, indicating a normal flow, proceed to the next step.
 #### Step: Check Focus Table (Highest Priority, Must Execute)
-If the user instruction corresponds to actions array, derive, key, compute, filter, distinct, sort, rank, segment, summarize, join, match, set, align, expand, pivot, you must check whether the section "Define Focus Table, Reference Table, Variable" explicitly defines the structure of the specific focus table, format: focus_table=<specific_focus_table_name>({<field_name>|,}), where primary key fields can be marked with an asterisk, but not mandatory, {} indicates that there may be multiple similar items. For example: focus_table=XX_example_table(*OrderID, OrderDate, OrderAmount). Or: focus_table=Course_example_table(Class, CourseName, ClassDate, ClassTime, Teacher).
+If the user instruction corresponds to actions derive, key, compute, filter, distinct, sort, rank, segment, summarize, join, match, set, align, expand, pivot, you must check whether the section "Define Focus Table, Reference Table, Variable" explicitly defines the structure of the specific focus table, format: focus_table=<specific_focus_table_name>({<field_name>|,}), where primary key fields can be marked with an asterisk, but not mandatory, {} indicates that there may be multiple similar items. For example: focus_table=XX_example_table(*OrderID, OrderDate, OrderAmount). Or: focus_table=Course_example_table(Class, CourseName, ClassDate, ClassTime, Teacher).
 If the section "Define Focus Table, Reference Table, Variable" does not explicitly define the structure of the specific focus table, or although it explicitly defines it, the instruction contains fields outside that definition, indicating an abnormal flow, output: 0; error, focus table in instruction is incorrect.
 Otherwise, indicating a normal flow, proceed to the next step.	
 Note: This step has higher priority than all examples and common knowledge. Strictly prohibited:
@@ -26,10 +26,10 @@ Note: This step has higher priority than all examples and common knowledge. Stri
 If all the above checks pass, indicating the goal is achievable, concatenate the required parameters, other parameters (non-required), and the action name into a single NLC statement and output it. Format: 1; <NLC_statement>. Note that you must replace the variable <NLC_statement> with the actual NLC statement.
 ### Common Knowledge
 #### Action
-An operation centered on structured data is an action, such as reading a file, sorting, joining, etc. Syntax: <action_word> {<parameter_item>}
-> Example: Parse the comma-separated text file Order_example_table.
-NLC: file "Orders.txt" csv; header
-Explanation: "file" is the action name; "Orders.txt" is the parameter value for the file parameter, the parameter name has been omitted; "header" is the parameter name of the boolean parameter header, see its description. The action name and parameters, and between parameters must be separated by symbols; you can choose any from space, comma, semicolon. It is recommended to use space between action and parameters, comma between parameters of the same category, and semicolon between parameters of different categories.
+An operation centered on structured data is an action, such as SQL, sorting, joining, etc. Syntax: <action_word> {<parameter_item>}
+> Example: Execute an SQL query to load the Order_example_table.
+NLC: SQL "select * from Orders"
+Explanation: "SQL" is the action name; "select * from Orders" is the parameter value for the SQL parameter, the parameter name has been omitted. The action name and parameters, and between parameters must be separated by symbols; you can choose any from space, comma, semicolon. It is recommended to use space between action and parameters, comma between parameters of the same category, and semicolon between parameters of different categories.
 Partial results (hereinafter referred to as results):
 OrderID	ClientID	SellerId	Amount	OrderDate
 1	WVF	5	440.0	2022-01-04
@@ -46,7 +46,7 @@ OrderID	ClientID	SellerId	Amount	OrderDate
 81	BDR	29	1168.0	2023-08-25
 108	BDR	12	480.0	2024-04-03
 139	BDR	30	166.0	2024-10-11
-Note: The definition of Actions is provided to help you distinguish between Actions and Functions. Do not confuse them. 1. A Function is part of an expression, and an expression is part of an Action. 2. Some enumerated values of enumerated parameters of Actions are similar or identical to Functions. For example, some enumerated parameter values of Actions are aggregation algorithms such as count, average, max, first, etc., while Functions also have aggregate functions such as count, avg, max, first, etc. However, they are fundamentally different: the aggregation algorithms in the enumerated values of Action parameters have no parameters, whereas aggregate functions always have parameters.
+Note: The definition of Actions is provided to help you distinguish between Actions and Functions. Do not confuse them. 1. A Function is part of an expression, and an expression is part of an Action. 2. Some enumerated values of enumerated parameters of Actions are similar or identical to Functions. For example, some enumerated parameter values of Actions are aggregation algorithms such as count, average, max, first, etc., while Functions also have aggregate functions such as avg, max, first, etc. However, they are fundamentally different: the aggregation algorithms in the enumerated values of Action parameters have no parameters, whereas aggregate functions always have parameters.
 
 > NLC: Action1 (max(Amount_quantity)+1) max
 In the above code, "Action1" is the action name (this action does not actually exist; it is just an example), "max" is the enumerated value of the enumerated parameter of this action, "(...)" parentheses indicate an expression, i.e., max(Amount1, Amount2)+1 is an expression; max(Amount1, Amount2) represents the aggregate function max and its parameters Amount1 and Amount2.
@@ -102,30 +102,24 @@ NLC: compute (Amount[1]*1.1); partition ClientID
 	Table variables and field variables already have corresponding handling (conversion/check) methods, no additional rules here.
 	Here specify the recognition method for simple variables: in user instructions, words marked or qualified by "specified", "particular", "parameter", "variable" are simple variables.
 	Do not perform any conversion on simple variables; keep them unchanged, including the marking or qualifying words "specified", "particular", "parameter", "variable". Do not mistake simple variables for table variables or field variables, including focus tables and reference tables.
-#### Comparison Words (Comparison Operations, Conditional Operations, Boolean Operations)
-Placed between two expressions to compare their relationship, returning boolean true/false. Each line below is a comparison word; a comparison word may have multiple spellings, e.g., "=" and "equals" mean the same, understood by common sense.
-=	equals	 //Note: boolean equality uses the symbol "=", not "=="
-<> not equals
-< less than
-> greater than
-<= not greater than
->= not less than
-in
-not in
-before	earlier than		//Note: used for date/time
-after later than 			//Note: used for date/time
-not before	not earlier than	//Note: used for date/time
-not after not later than		//Note: used for date/time
+#### Comparison Operators (Comparison Operations, Conditional Operations, Boolean Operations)
+Placed between two expressions to compare their relationship, returning boolean true/false.
+=	 //Note: boolean equality uses the symbol "=", not "=="
+<> 
+< 
+> 
+<= 
+>= 
 #### Conjunctions (Logical Operators)
 and, or, not ; and or not
 #### Mathematical Operators
 + - * / =
 #### Ordered Set Operators, Table Field Operators
-X(i)	the i-th member of ordered set X. E.g.: X=["apple","banana","grape"], then X[2] equals "banana"
-T.F	the field F of the first row of table T. E.g.: Order_example_table.Amount equals 440.0
-F	when only the focus table exists and no other tables, the field name can be used alone. Compared with T.F, the difference is that T.F includes an explicit table name; F does not include an explicit table name and is used when there is a focus table (default table/current table). E.g.: Amount equals 440.0, where Amount is a field of the focus table.
-F@	when both the focus table and other tables exist, F@ must be used to indicate a field of the focus table, to distinguish ownership from other tables (especially for fields with the same name). E.g.: EmployeeSalary@>=5000 and ["Sales Dept 1","Sales Dept 2","Product Dept"] contains DepartmentName, here EmployeeSalary is a field of the focus table, while DepartmentName is a field of another table. Note, when only the focus table exists, using F@ or F to denote a field of the focus table is both correct. E.g., when only the focus table exists, both expressions are valid: Amount equals 440.0, Amount@ equals 440.0
-#i	# is a fixed symbol, i is the column sequence number, #i means accessing the field by column number. E.g.: Order_example_table.#4 equals Order_example_table.Amount
+X(i)	the i-th member of ordered set X. E.g.: X=["apple","banana","grape"], then X[2] = "banana"
+T.F	the field F of the first row of table T. E.g.: Order_example_table.Amount = 440.0
+F	when only the focus table exists and no other tables, the field name can be used alone. Compared with T.F, the difference is that T.F includes an explicit table name; F does not include an explicit table name and is used when there is a focus table (default table/current table). E.g.: Amount = 440.0, where Amount is a field of the focus table.
+F@	when both the focus table and other tables exist, F@ must be used to indicate a field of the focus table, to distinguish ownership from other tables (especially for fields with the same name). E.g.: EmployeeSalary@>=5000 and ["Sales Dept 1","Sales Dept 2","Product Dept"] contains DepartmentName, here EmployeeSalary is a field of the focus table, while DepartmentName is a field of another table. Note, when only the focus table exists, using F@ or F to denote a field of the focus table is both correct. E.g., when only the focus table exists, both expressions are valid: Amount = 440.0, Amount@ = 440.0
+#i	# is a fixed symbol, i is the column sequence number, #i means accessing the field by column number. E.g.: Order_example_table.#4 = Order_example_table.Amount
 #	the row number of a record, equivalent to a special built-in column of the table.
 F[i]	F is a field name, i is the adjacent position/relative position/cross-row position, i.e., the i-th row relative to the current row, positive means backward, negative means forward, out-of-bounds is empty. F[i] denotes the value of field F in the row that is i rows away from the current row in the current table. The current field F is shorthand for F[0]. For example: assign the Amount field of the Order_example_table to the Amount of the next record, equivalent to shifting the whole up by one row.
 NLC: compute Amount[1] 

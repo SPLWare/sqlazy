@@ -71,8 +71,8 @@ Goal: create a new field "UpFlag" on the focus table and fill group numbers, sta
 NLC: segment condition ClosePrice<ClosePrice[-1]; as UpFlag
 Analysis: The condition in this example is simple and can be replaced by fixed conditions, so it is equivalent to: segment ClosePrice; down; as UpFlag
 In particular, this parameter can be used to express "when a certain expression equals or does not equal a certain value, increment the group number".
-> Assign the new column "Number" of the focus table starting from 1, increment the number when the condition is "Month not equals 3", otherwise keep the number unchanged.
-NLC: segment condition (Month not equals 3); as Number
+> Assign the new column "Number" of the focus table starting from 1, increment the number when the condition is "Month <> 3", otherwise keep the number unchanged.
+NLC: segment condition (Month <> 3); as Number
 Parameter: **partition**
 Calculate segment numbers by partition, partitions do not affect each other, conceptually similar to SQL's PARTITION BY. Optional parameter; type is (field) identifier; parameter name cannot be omitted.
 Parameter: **as <new_column_name>**

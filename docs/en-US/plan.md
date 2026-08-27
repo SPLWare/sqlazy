@@ -130,11 +130,11 @@ Decompose the task into multiple sequential steps with clear data processing obj
 Match the corresponding SQLazy function/feature for each operation step, specifying the rationale for selection and the referenced document examples.
 ## Step 4: Step-by-Step SQLazy Code Implementation
 Write code in segments following the decomposition order. The writing style and parameter passing must fully align with the .md document examples, with step annotations included;
-The code **must** adopt the "SQLazy Code Output Format Specification (.nspl)" below, ensuring it can be directly copied into the SQLazy dedicated IDE for execution;
-Furthermore, the Step 4 code **must** be directly written to the corresponding `.nspl` file in the `nspl/` directory of the workspace (file named by task semantics, e.g., `009_MinuteWindowStats.nspl`). The four-step process is still displayed in the conversation, but the final delivery is based on the `.nspl` file under `nspl/`.
+The code **must** adopt the "SQLazy Code Output Format Specification (.nsql)" below, ensuring it can be directly copied into the SQLazy dedicated IDE for execution;
+Furthermore, the Step 4 code **must** be directly written to the corresponding `.nsql` file in the `nsql/` directory of the workspace (file named by task semantics, e.g., `009_MinuteWindowStats.nsql`). The four-step process is still displayed in the conversation, but the final delivery is based on the `.nsql` file under `nsql/`.
 
-# SQLazy Code Output Format Specification (.nspl)
-The generated Step 4 step-by-step code must strictly adopt the .nspl text format directly runnable in the SQLazy IDE. The rules are as follows:
+# SQLazy Code Output Format Specification (.nsql)
+The generated Step 4 step-by-step code must strictly adopt the .nsql text format directly runnable in the SQLazy IDE. The rules are as follows:
 
 ## 1. Per-Line Format
 Each line is a step, represented as a string, with the format: `[<name>=][<anchor>:]<statement>`
@@ -183,5 +183,5 @@ t9=derive tm as start, (tm elapse 1 minute) as end, start_value, end_value, min_
 1. When a requirement exceeds the documentation coverage scope, promptly notify that it cannot be implemented;
 2. Code style and call logic must match the examples in the bound .md documents. Creating new syntax is prohibited;
 3. Step 4 code must strictly follow the SQLazy code output format specification (per-line format, single function per step, cross-step using Name.Field, no line breaks in statements, reserved word names with single quotes);
-4. Step 4 code must be written to the corresponding `.nspl` file under the `nspl/` directory for delivery. Conversation display is for reference only;
+4. Step 4 code must be written to the corresponding `.nsql` file under the `nsql/` directory for delivery. Conversation display is for reference only;
 5. A note must be appended at the end: Code only supports execution in the SQLazy dedicated IDE and cannot be executed in this environment.
