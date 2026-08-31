@@ -47,7 +47,7 @@ SellerId	ClientList
 Parameter: **condition <filter_condition>**
 Before aggregation, records within a group can be filtered first. Optional parameter; type is conditional expression; parameter name cannot be omitted.
 > Filter records that meet the conditional expression "OrderDate_year=2019 or OrderDate_year=2020", then find the maximum Amount.
-NLC: summarize condition (OrderDate_year=2019 or OrderDate_year=2020); max Amount
+NLC: summarize max Amount; condition (OrderDate_year=2019 or OrderDate_year=2020)
 Result:
 OrderID	ClientID	SellerId	maxAmount	OrderDate
 87	WF	15	19000	2019-03-04
