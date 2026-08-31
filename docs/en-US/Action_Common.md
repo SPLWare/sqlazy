@@ -71,8 +71,8 @@ sum(1,3,5)
 Explanation: equals 9.
 
 3.	For a function with an object, if it has multiple parameters, the entire function should be written in parentheses.
-> Example: fuzzy matching of strings, case-insensitive, using SQL wildcard % to represent one or more characters
-("NLC statement conversion" like "%statement%"; insensitive; SQL_wildcard)
+> Example: fuzzy matching of strings, case-insensitive, using SPL wildcard * to represent zero or more characters
+("NLC statement conversion" like "*statement*"; insensitive; spl_match)
 Explanation: "NLC statement conversion" is the object, "like" is the function name, there are 3 parameters in total.
 #### Expression
 NLC expression refers only to an expression whose result is a simple data type. Its components include: constant, identifier (field name), variable, operator (comparison word, conjunction, mathematical operator, ordered set operator, table operator), multiple levels of parentheses, function. Simple data types (or simple types) are: numeric (integer, float, string, string, date, time), boolean, enum, identifier of simple data type. Opposite to simple data types are ordered set types and table types. 
