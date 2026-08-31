@@ -138,7 +138,7 @@ NLC: pivot group Company as Branch, Dept; name State; value Amount; inverse
 Parameter: **header <custom_header_column_names>**
 After pivot, the new column names are by default specified by the **name <column_name>** parameter. If you do not want to use the default, you can use this parameter to customize the new column names. Optional parameter; identifier set; parameter name cannot be omitted.
 > For the branch department budget table, group by Branch, Dept, perform row_to_column on the group data, State as the title column, Amount as the value column, use the headers FState, Cstate, NState, TState, PState for the new columns.
-NLC: pivot group Branch, Dept; name State; value Amount; FState,Cstate,NState,TState,PState
+NLC: pivot group Branch, Dept; name State; value Amount; header FState,Cstate,NState,TState,PState
 Result:
 Branch	Dept	FState	Cstate	NState	TState	PState
 branch1	Administration	28000				
