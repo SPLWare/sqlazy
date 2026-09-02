@@ -1,8 +1,8 @@
 ﻿### Action: expand
-Syntax: [<list>] [as <new_column_name>] [take {<original_column_name> [as <new_column_name>]}]
+Syntax: <list> [use <column_expression>] [as <new_column_name>] [take {<original_column_name> [as <new_column_name>]}]
 
 Parameter: **as**
-The column to fill with expanded values, can be a new column or an existing column in the focus table. If the **list** parameter is another table in the context, omitting this parameter means using the column from that table that serves as the expanded set. Optional parameter; (field) identifier type; parameter name cannot be omitted. This parameter is generally used together with the **list** parameter.
+The column to fill with expanded values, can be a new column or an existing column in the focus table. If the **list** parameter is another table in the context, omitting this parameter means the expanded column name will use the column name of the column that serves as the expanded set in that table. Optional parameter; (field) identifier type; parameter name cannot be omitted. This parameter is generally used together with the **list** parameter.
 
 Parameter: **list** 
 One of several forms used to generate a set, including: constant set (including identifiers), natural number N, expressions that can generate a set, other tables in the context (identifiers). Required parameter; type is multiple forms; parameter name must be omitted.
@@ -49,9 +49,16 @@ Li Si	Class 5 Grade 2	Chemistry
 Li Si	Class 5 Grade 2	Language  
 NLC: expand (if(parameter1>2 then ["Chemistry","Language"]; else ["Physics","Math","English"])) as Subject  
 
-Fourth form: When the list parameter is another table in the context, if that table has a primary key, the set is all values of the primary key column; if it has no primary key, the set is all values of the first column of that table. Assuming the set length is M, each record of the focus table is expanded into M records, with the set members filled into the specified column.
+Fourth form: When the list parameter is another table in the context, if that table has a primary key, by default the set is all values of the primary key column; if it has no primary key, by default the set is all values of the first column of that table. You can also use the **use** parameter to specify which column to take. Assuming the set length is M, each record of the focus table is expanded into M records, with the set members filled into the specified column.
 > In the context there is a Gift_table, with structure [GiftName, Brand, Grade], no primary key, with N records. The focus table is Customer_table. Now require to sequentially write the GiftName of Gift_table into the PlannedGift column of Customer_table, expanding each record into N records.
 NLC: expand Gift_table as PlannedGift
+Note: Gift_table has no primary key, so the default uses the first column (GiftName) as the expanded set; therefore the "use" parameter is omitted here.
+
+Parameter: **use <column_expression>**
+When the **list** parameter is another table, this parameter specifies which column of that table to take values from as the expanded set. By default, the column values of the primary key of the **list** table are used as the expanded set; if there is no primary key, the column values of the first column are used. Optional parameter; type is (column) identifier/field; the parameter name cannot be omitted.
+> In the context there is a Course_table with structure [CourseID, CourseName, Teacher], where CourseID is the primary key. The focus table is Student_table. Now require to use the CourseName of Course_table as the expanded set, sequentially writing it into the ElectiveCourse column of Student_table, expanding each record into N records.
+NLC: expand Course_table; use CourseName; as ElectiveCourse
+Note: Since the primary key of Course_table is "CourseID" (also the first column), the default would use CourseID as the expanded set, not CourseName, so "use CourseName" must be specified.
 
 Parameter: **take**
 When the **list** parameter is another table, this parameter can be used to join other columns of that table (except the column that generates the set) to the back of the focus table. Optional parameter; composite parameter; parameter name cannot be omitted. This parameter is a composite parameter consisting of one or more pairs of sub-parameters, i.e., sub-parameter **original_column_name** and sub-parameter **as**, each pair representing one column in the other table.
